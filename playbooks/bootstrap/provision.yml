@@ -1,0 +1,21 @@
+- name: Ansible Playbook test connection
+  hosts: cluster
+  become: yes
+  tasks:
+    - name: Update cache
+      apt:
+        update_cache: yes
+    - name: Disable password and root login
+      template:
+        src: sshd_config.yml.j2
+        dest: /etc/ssh/sshd_config
+      notify: Reload SSH
+    - name: Install Docker
+      shell: curl -sSL https://get.docker.com | sh
+    - name: Add pi user to docker group
+      shell: usermod pi -aG docker
+  handlers:
+    - name: Reload SSH
+      service:
+        name: sshd
+        state: reloaded

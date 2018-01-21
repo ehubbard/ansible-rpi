@@ -1,0 +1,20 @@
+---
+- name: Remove the swarm nodes
+  hosts: swarmNodes
+  become: true
+  tasks:
+    - name: Remove the node from the swarm
+      command: docker swarm leave
+      register: resultRemoveNode
+    - debug: msg="{{ resultRemoveNode.stdout }}"
+
+- name: Remove the initial swarm manager from the swarm
+  hosts: swarmManagers[0]
+  become: true
+
+  tasks:
+    - name: Leave the swarm
+      command: docker swarm leave --force
+      register: resultLeaveSwarm
+    - debug: msg="{{ resultLeaveSwarm.stdout }}"
+

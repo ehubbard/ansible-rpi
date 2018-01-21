@@ -1,0 +1,33 @@
+---
+- name: Set up openfass on docker swarm
+  hosts: swarmManagers[0]
+  become: true
+
+  tasks:
+    - name: Install git
+      apt:
+        name: git
+        state: present
+    - name: Clone openfass
+      git:
+        repo: https://github.com/alexellis/faas/
+        dest: /home/pi/fass
+        clone: yes
+    - name: Run openfass install script
+      command: chdir=/home/pi/fass ./deploy_stack.armhf.sh
+    - name: Install FaaS-CLI
+      get_url:
+        url: http://cli.openfaas.com
+        dest: /home/pi/fcli.sh
+        mode: 0770
+    - name: Install FaaS-CLI
+      command: chdir=/home/pi/ /bin/bash ./fcli.sh armv7l
+    - name: Clone the samples
+      git: 
+        repo: https://github.com/alexellis/faas-cli
+        dest: /home/pi/fass-cli
+        clone: yes
+    - name: Copy node template to work with RPI
+      command: chdir=/home/pi/fass-cli cp ./template/node-armhf/Dockerfile template/node/
+    - name: Copy python template to work with RPI
+      command: chdir=/home/pi/fass-cli cp ./template/python-armhf/Dockerfile template/python/
