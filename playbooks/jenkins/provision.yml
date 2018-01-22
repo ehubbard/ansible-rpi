@@ -1,5 +1,6 @@
 - name: Ansible Playbook start Jenkins
+  become: yes
   hosts: mac
   tasks:
     - name: Start Jenkins
-      shell: docker run -p 8080:8080 -p 50000:50000 -dv /Users/ehubbard/projects-rsp/jenkins_store:/var/jenkins_home jenkins/jenkins:lts
+      shell: docker run -u jenkins -p 8080:8080 -p 50000:50000 -v /Users/ehubbard/projects-rsp/jenkins_store:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock jenkins/jenkins:lts
