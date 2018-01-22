@@ -1,0 +1,5 @@
+-e git+https://github.com/ansible/ansible.git@d0a257efadaad30b064feea0aa9cc8c577ea360c
+boto==2.45.0
+boto3==1.4.4
+docker-py==1.10.6
+Jinja2==2.10
