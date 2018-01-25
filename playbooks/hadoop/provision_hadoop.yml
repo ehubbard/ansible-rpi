@@ -1,0 +1,76 @@
+- name: Ansible Playbook test connection
+  hosts: hadoop-cluster
+  become: yes
+  tasks:
+    - name: Set up multiple authorized keys
+      authorized_key:
+        user: deploy
+        state: present
+        key: '{{ item }}'
+      with_file:
+        - public_keys/black-pearl00
+        - public_keys/black-pearl01
+        - public_keys/black-pearl02
+        - public_keys/black-pearl03
+
+    - name: Install dependencies
+      apt: name={{ item }} state=installed
+      with_items:
+           openjdk-8-jdk 
+           python3-pip 
+           python3-dev 
+           python-dev 
+           python-setuptools
+    - name: update pip
+      shell: pip3 install -U pip
+    - name: install pip packages
+      pip: name={{ item }}
+      with_items:
+           numpy 
+           pandas 
+           matplotlib 
+           ipython
+    - name: Download package
+        get_url:
+        url: http://mirror.nus.edu.sg/apache/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz
+        dest: "/home/{{ hadoop_user }}"
+        mode: 0440 
+    - name: Untar package
+        shell: tar -xvfz /home/pi/hadoop-2.7.5.tar.gz
+    - name: Move binaries
+        shell: mv /home/pi/hadoop-2.7.5 /usr/local/hadoop
+    - name: Update .bashrc with env variables
+      template:
+        source: bashrc.yml.j2
+        dest: /home/pi/.bashrc
+    - name: Source updated bashrc
+      shell: source /home/pi/.bashrc
+    - name: Update hadoop env script
+      shell: echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf" >> /usr/local/hadoop/etc/hadoop/hadoop-env.sh
+    - name: Update hadoop core-site.xml
+      template:
+        source: core-site.xml.j2
+        dest: /usr/local/hadoop/etc/hadoop/core-site.xml
+    - name: create dir for namenode file
+      shell: mkdir -p /usr/local/hadoop_store/hdfs/namenode
+    - name: create dir for datanode file
+      shell: mkdir -p /usr/local/hadoop_store/hdfs/datanode
+    - name: Update hdfs-site.xml
+      template:
+         source: hdfs-site.xml.j2
+         dest: /usr/local/hadoop/hdfs-site.xml
+    - name: Update yarn-site.xml
+         source: yarn-site.xml.j2
+         dest: /usr/local/hadoop/yarn-site.xml
+
+- name: Setup master
+  hosts: hadoop-master
+  become: yes
+  tasks:
+     - name: Install jupyter
+       pip: jupyter
+     - name: Add slaves file to master
+       template:
+          source: slaves.j2
+          dest: /usr/local/hadoop/slaves
+
