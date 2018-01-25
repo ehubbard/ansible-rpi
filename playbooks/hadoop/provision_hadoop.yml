@@ -14,7 +14,7 @@
         - public_keys/black-pearl03
 
     - name: Install dependencies
-      apt: name={{ item }} state=installed
+      apt: name={{item}} state=installed
       with_items:
         - openjdk-8-jdk 
         - python3-pip 
@@ -24,7 +24,7 @@
     - name: update pip
       shell: pip3 install -U pip
     - name: install pip packages
-      pip: name={{ item }}
+      pip: name={{ item }} executable=pip3
       with_items:
         - numpy 
         - pandas 
@@ -32,8 +32,8 @@
         - ipython
     - name: Download package
       get_url:
-        url: http://mirror.nus.edu.sg/apache/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz
-        dest: "/home/{{ hadoop_user }}"
+        url: http://mirror.nus.edu.sg/apache/hadoop/common/hadoop-2.7.5/hadoop-2.7.5.tar.gz
+        dest: /home/pi/
         mode: 0440 
     - name: Untar package
       shell: tar -xvfz /home/pi/hadoop-2.7.5.tar.gz
