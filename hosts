@@ -25,7 +25,7 @@ swarmNodes
 ansible_ssh_user=pi
 
 [hadoop-master]
-black-pearl00 ansible_ssh_user=pi ansible_ssh_private_key_file=beowulf_rsa
+black-pearl03 ansible_ssh_user=pi ansible_ssh_private_key_file=beowulf_rsa
 
 [hadoop-datanodes]
 black-pearl01 ansible_ssh_user=pi ansible_ssh_private_key_file=beowulf_rsa

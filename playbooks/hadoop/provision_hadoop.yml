@@ -4,7 +4,7 @@
   tasks:
     - name: Set up multiple authorized keys
       authorized_key:
-        user: deploy
+        user: pi
         state: present
         key: '{{ item }}'
       with_file:
@@ -16,29 +16,29 @@
     - name: Install dependencies
       apt: name={{ item }} state=installed
       with_items:
-           openjdk-8-jdk 
-           python3-pip 
-           python3-dev 
-           python-dev 
-           python-setuptools
+        - openjdk-8-jdk 
+        - python3-pip 
+        - python3-dev 
+        - python-dev 
+        - python-setuptools
     - name: update pip
       shell: pip3 install -U pip
     - name: install pip packages
       pip: name={{ item }}
       with_items:
-           numpy 
-           pandas 
-           matplotlib 
-           ipython
+        - numpy 
+        - pandas 
+        - matplotlib 
+        - ipython
     - name: Download package
-        get_url:
+      get_url:
         url: http://mirror.nus.edu.sg/apache/hadoop/common/hadoop-2.7.3/hadoop-2.7.3.tar.gz
         dest: "/home/{{ hadoop_user }}"
         mode: 0440 
     - name: Untar package
-        shell: tar -xvfz /home/pi/hadoop-2.7.5.tar.gz
+      shell: tar -xvfz /home/pi/hadoop-2.7.5.tar.gz
     - name: Move binaries
-        shell: mv /home/pi/hadoop-2.7.5 /usr/local/hadoop
+      shell: mv /home/pi/hadoop-2.7.5 /usr/local/hadoop
     - name: Update .bashrc with env variables
       template:
         source: bashrc.yml.j2
@@ -60,6 +60,7 @@
          source: hdfs-site.xml.j2
          dest: /usr/local/hadoop/hdfs-site.xml
     - name: Update yarn-site.xml
+      template:
          source: yarn-site.xml.j2
          dest: /usr/local/hadoop/yarn-site.xml
 
@@ -68,7 +69,8 @@
   become: yes
   tasks:
      - name: Install jupyter
-       pip: jupyter
+       pip: 
+         name: jupyter
      - name: Add slaves file to master
        template:
           source: slaves.j2
